@@ -17,9 +17,9 @@ MODE="all"
 case "${1:-}" in
     --upgradable) MODE="upgradable" ;;
     --help|-h)
-        printf "\n  ${BOLD}apt-why2${RESET} — interactive package investigator\n\n"
-        printf "  ${C}apt-why2${RESET}               fzf over all installed packages\n"
-        printf "  ${C}apt-why2 --upgradable${RESET}  fzf over upgradable packages only\n\n"
+        printf "\n  ${BOLD}apt-why${RESET} — interactive package investigator\n\n"
+        printf "  ${C}apt-why${RESET}               fzf over all installed packages\n"
+        printf "  ${C}apt-why --upgradable${RESET}  fzf over upgradable packages only\n\n"
         printf "  Inside fzf: type to filter, enter to investigate, q/esc to go back\n\n"
         exit 0 ;;
 esac
