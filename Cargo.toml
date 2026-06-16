@@ -1,0 +1,26 @@
+[package]
+name = "whypkg"
+version = "0.1.0"
+edition = "2021"
+description = "why the hell is this package here? — a fast, cross-distro package investigator (apt, pacman, dnf)"
+license = "AGPL-3.0-only"
+repository = "https://gitlab.com/safteinzz/whypkg"
+keywords = ["apt", "pacman", "dnf", "packages", "dependencies"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "whypkg"
+path = "src/main.rs"
+
+[dependencies]
+clap           = { version = "4", features = ["derive"] } # CLI argument parsing
+colored        = "2"                                       # terminal colors for the report mode
+ratatui        = "0.29"                                    # the interactive TUI (browse mode)
+crossterm      = "0.28"                                    # terminal backend / key events for ratatui
+nucleo-matcher = "0.3"                                     # the fuzzy matcher behind the finder (no external fzf)
+chrono         = "0.4"                                     # parse package-manager log timestamps for "same session"
+flate2         = "1"                                       # read rotated, gzipped logs (e.g. dpkg.log.2.gz)
+
+[profile.release]
+lto = true
+strip = true

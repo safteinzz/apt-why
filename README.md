@@ -1,58 +1,55 @@
-# apt-why
+# whypkg
 
-Two tools for understanding your Debian/Ubuntu packages.
+**why the hell is this package here?** 🕵️
+
+A fast, cross-distro package investigator. Fuzzy-find any installed package and
+see, instantly: did *you* install it or did something pull it in, when, what it
+came alongside, what needs it, and what it needs — then drill through the whole
+dependency web, following the thread inward and outward.
+
+It started life as the bash `apt-why` / `apt-pending` scripts (kept in
+[`legacy/`](legacy/)); this is the Rust rewrite — one self-contained binary, no
+external `fzf`, and built to grow beyond apt.
 
 ## Install
 
 ```bash
-git clone git@gitlab.com:safteinzz/apt-why.git
-cd apt-why
-./install.sh            # installs apt-why only
-./install.sh --extras   # also installs apt-pending
+cargo install whypkg
 ```
 
-Installs `fzf` and `bc` if missing.
+Update later with `whypkg update` (or `cargo install whypkg --force`).
 
----
-
-## apt-why — interactive investigator
+## Use
 
 ```bash
-apt-why                  # browse all installed packages
-apt-why --upgradable     # browse packages with pending upgrades
+whypkg                 # browse every installed package
+whypkg --upgradable    # browse only packages with a pending upgrade
+whypkg pending         # report every pending upgrade, grouped by why it's here
+whypkg pending --quick # one line per pending package: size + reason
 ```
 
-Fuzzy-find any package. Press `enter` to open its dossier:
+Inside the browser: **type** to fuzzy-filter, **Enter** to open a package's
+dossier, **Esc** to go back a level (a breadcrumb shows your trail), **Ctrl-C**
+to quit. `[M]` = you installed it, `[A]` = pulled in automatically, `↑` = an
+upgrade is available.
 
-- `[M]` manual / `[A]` auto-installed, install date
-- Upgrade version if available
-- What needs it, what it depends on — navigable via a second fuzzy finder
-- Packages installed in the same session (context clue)
+## Why it's fast
 
----
+Everything is loaded once at startup into an in-memory graph; every hop while
+you browse is a hash-map lookup, not a subprocess. The slowest part is your
+package manager's own queries (~½ second), not whypkg.
 
-## apt-pending — upgrade report `(--extras)`
+## Distro support
 
-Run after `sudo apt update` to see what's waiting and why.
+| Distro family         | Status     |
+|-----------------------|------------|
+| Debian / Ubuntu (apt) | ✅ working  |
+| Arch (pacman)         | 🔜 planned  |
+| Fedora / RHEL (dnf)   | 🔜 planned  |
 
-```bash
-apt-pending              # full report
-apt-pending --quick      # one line per package: size + reason
-apt-pending --auto       # auto-installed grouped by cause
-apt-pending --kernel     # kernel/firmware/microcode only
-apt-pending --apps       # your manually installed packages only
-apt-pending --sizes      # top 20 by disk size
-```
+Each package manager lives behind a single `Backend` trait — the analysis and
+the UI are distro-agnostic, so adding pacman or dnf is one focused file.
 
-Scriptable and pipeable:
+## License
 
-```bash
-apt-pending --quick | grep clang
-apt-pending --quick > pre-upgrade-$(date +%F).txt
-```
-
----
-
-## Requirements
-
-`fzf`, `bc` — installed automatically by `install.sh`
+AGPL-3.0-only.
